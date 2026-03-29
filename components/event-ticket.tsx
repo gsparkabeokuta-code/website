@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { QRCodeSVG } from "qrcode.react"
-import { Download, Share2, X } from "lucide-react"
+import { Download, Share2, X, Camera } from "lucide-react"
 import { toPng } from "html-to-image"
 import type { Registration } from "@/lib/supabase"
 
@@ -43,8 +43,18 @@ interface EventTicketProps {
 
 export function EventTicket({ registration }: EventTicketProps) {
   const ticketRef = useRef<HTMLDivElement>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [photo, setPhoto] = useState<string | null>(null)
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setPhoto(reader.result as string)
+    reader.readAsDataURL(file)
+  }
 
   const ticketId = registration.ticket_id || "GSPARK-XXXXXXXX"
   const qrData = JSON.stringify({
@@ -121,16 +131,33 @@ export function EventTicket({ registration }: EventTicketProps) {
         </div>
 
         {/* Attendee Info */}
-        <div className="mb-6">
-          <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
-            Attendee
-          </p>
-          <h3 className="text-2xl sm:text-3xl font-bold text-white truncate">
-            {registration.full_name}
-          </h3>
-          {registration.role && (
-            <p className="text-gray-400 mt-1">{registration.role}</p>
+        <div className="flex items-center gap-4 mb-6">
+          {photo ? (
+            <img
+              src={photo}
+              alt={registration.full_name}
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 flex-shrink-0"
+              style={{ borderColor: ticketColor }}
+            />
+          ) : (
+            <div
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center bg-gray-800 border-2 border-dashed border-gray-600 flex-shrink-0 cursor-pointer hover:border-gray-500 transition-colors"
+              onClick={() => photoInputRef.current?.click()}
+            >
+              <Camera className="w-6 h-6 text-gray-500" />
+            </div>
           )}
+          <div className="min-w-0">
+            <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
+              Attendee
+            </p>
+            <h3 className="text-2xl sm:text-3xl font-bold text-white truncate">
+              {registration.full_name}
+            </h3>
+            {registration.role && (
+              <p className="text-gray-400 mt-1">{registration.role}</p>
+            )}
+          </div>
         </div>
 
         {/* Event Details */}
@@ -174,8 +201,24 @@ export function EventTicket({ registration }: EventTicketProps) {
         </div>
       </div>
 
+      {/* Photo Upload */}
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handlePhotoUpload}
+        className="hidden"
+      />
+      <button
+        onClick={() => photoInputRef.current?.click()}
+        className="w-full flex items-center justify-center gap-2 mt-6 px-5 py-3 bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white rounded-xl font-medium transition-all border border-dashed border-gray-700"
+      >
+        <Camera className="w-4 h-4" />
+        {photo ? "Change Photo" : "Add Your Photo"}
+      </button>
+
       {/* Action Buttons */}
-      <div className="flex gap-3 mt-6">
+      <div className="flex gap-3 mt-3">
         <button
           onClick={handleDownload}
           disabled={downloading}
