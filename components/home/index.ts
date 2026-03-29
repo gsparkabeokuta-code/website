@@ -1,0 +1,8 @@
+export { HomeHeroSection } from "@/components/home/hero-section"
+export { HomeMissionSection } from "@/components/home/mission-section"
+export { HomeEventHighlightsSection } from "@/components/home/event-highlights-section"
+export { HomeHackathonSection } from "@/components/home/hackathon-section"
+export { HomeSpeakersSection } from "@/components/home/speakers-section"
+export { HomeSponsorsSection } from "@/components/home/sponsors-section"
+export { HomeFaqSection } from "@/components/home/faq-section"
+export { HomeRegistrationSection } from "@/components/home/registration-section"
