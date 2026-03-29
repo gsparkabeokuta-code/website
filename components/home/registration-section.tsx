@@ -280,7 +280,7 @@ export function HomeRegistrationSection() {
               </p>
               <p className="text-sm text-[#4B4B4B] mt-1">{formData.track} Track</p>
               <div className="mt-3 pt-3 border-t border-[#E5E5E5]">
-                <p className="text-[#4B4B4B] text-sm">📅 SAT. 16TH MAY'26 • 📍 FUNAAB, Abeokuta</p>
+                <p className="text-[#4B4B4B] text-sm">📅 SAT. 25TH MAY'26 • 📍 FUNAAB, Abeokuta</p>
               </div>
             </div>
             <button

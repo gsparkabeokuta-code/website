@@ -144,7 +144,7 @@ export default function AiMlResearchPage() {
               titleAccent="AI/ML Research Challenge"
         titleBase="Guidelines"
         themeText="Advancing Artificial Intelligence and Machine Learning for Sustainable Development in Africa"
-        dateText="SAT. 16TH MAY'26"
+        dateText="SAT. 25TH MAY'26"
         themeImage= "/robot.png"
         registerHref="https://form.finalform.so/forms/0DNzsEHe"
       />
