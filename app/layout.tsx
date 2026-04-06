@@ -21,7 +21,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "G-SPARK SUMMIT 1.0 — Nigeria's Premier Tech Summit",
   description:
-    "Join 2,000+ innovators, students, and industry leaders at G-SPARK SUMMIT 1.0. Showcasing talents, scaling impact across Agritech, AI/ML, and African tech. May 16, 2026 at FUNAAB, Abeokuta.",
+    "Join 2,000+ innovators, students, and industry leaders at G-SPARK SUMMIT 1.0. Showcasing talents, scaling impact across Agritech, AI/ML, and African tech. April 25, 2026 at FUNAAB, Abeokuta.",
   keywords: [
     "G-SPARK",
     "tech summit",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "G-SPARK SUMMIT 1.0 — Ignite Africa's Innovation Future",
     description:
-      "Nigeria's Premier Tech Summit. Join 2,000+ innovators at FUNAAB, Abeokuta on May 16, 2026.",
+      "Nigeria's Premier Tech Summit. Join 2,000+ innovators at FUNAAB, Abeokuta on April 25, 2026.",
     type: "website",
     locale: "en_NG",
     siteName: "G-SPARK SUMMIT",
