@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { GDG_COMMUNITY_REGISTRATION_URL } from "@/lib/links"
 
 const navLinks = [
   { label: "Highlights", href: "/#highlights" },
@@ -59,7 +60,7 @@ export function Header({
 
         <div className="hidden md:flex items-center gap-3">
           <Button asChild className={cn(baseButtonClassName, buttonClassName)}>
-            <a href="/#register" aria-label="Register for the summit event">
+            <a href={GDG_COMMUNITY_REGISTRATION_URL} aria-label="Register for the summit event">
               Register for Event
             </a>
           </Button>
@@ -90,7 +91,7 @@ export function Header({
               </a>
             ))}
             <Button asChild className={cn("w-full", baseButtonClassName, buttonClassName)}>
-              <a href="/#register" aria-label="Register for the summit event" onClick={() => setIsOpen(false)}>
+              <a href={GDG_COMMUNITY_REGISTRATION_URL} aria-label="Register for the summit event" onClick={() => setIsOpen(false)}>
                 Register for Event
               </a>
             </Button>

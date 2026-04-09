@@ -121,8 +121,8 @@ export function Registration() {
               </div>
               <p className="text-gray-400 mt-4 text-sm">📅 April 25, 2026 • 📍 FUNAAB, Abeokuta</p>
             </div>
-            <Button
-              onClick={() => router.push(`/ticket?email=${encodeURIComponent(formData.email)}`)}
+              <Button
+              onClick={() => router.push(`/ticket`)}
               className="mt-6 w-full bg-[#1FAE63] hover:bg-[#178F52] text-white py-5 rounded-xl text-lg font-semibold"
             >
               View & Download Your Ticket

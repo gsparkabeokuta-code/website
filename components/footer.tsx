@@ -1,5 +1,6 @@
 import { ArrowUpRight, Facebook, Instagram, Linkedin, Music2, Twitter } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { GDG_COMMUNITY_REGISTRATION_URL } from "@/lib/links"
 
 type FooterProps = {
   className?: string
@@ -23,7 +24,7 @@ export function Footer({ className, ctaClassName, iconClassName }: FooterProps) 
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <h2 className="text-4xl sm:text-6xl lg:text-8xl font-extrabold">G-SPARK</h2>
             <a
-              href="/#register"
+              href={GDG_COMMUNITY_REGISTRATION_URL}
               className={cn(
                 "inline-flex items-center justify-center gap-2 rounded-full border-2 border-agri-green px-5 py-2 text-sm font-semibold text-agri-green transition-colors hover:bg-white/80",
                 ctaClassName

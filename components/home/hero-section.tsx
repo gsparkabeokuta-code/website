@@ -12,7 +12,7 @@ export function HomeHeroSection() {
       dateText="SAT. 25TH April'26"
       locationText="FUNAAB, Abeokuta"
       themeImage=""
-      registerHref="#register"
+      registerHref="https://gdg.community.dev/e/m29qkv/"
     />
   )
 }

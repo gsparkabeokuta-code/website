@@ -4,44 +4,15 @@ import { useRef, useState } from "react"
 import { QRCodeSVG } from "qrcode.react"
 import { Download, Share2, X, Camera } from "lucide-react"
 import { toPng } from "html-to-image"
-import type { Registration } from "@/lib/supabase"
-
-const SHARE_PLATFORMS = [
-  {
-    name: "Twitter / X",
-    icon: "𝕏",
-    getUrl: (text: string) =>
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
-  },
-  {
-    name: "Facebook",
-    icon: "f",
-    getUrl: (text: string) =>
-      `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`,
-  },
-  {
-    name: "LinkedIn",
-    icon: "in",
-    getUrl: (text: string) =>
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://gsparksummit.com")}&summary=${encodeURIComponent(text)}`,
-  },
-  {
-    name: "WhatsApp",
-    icon: "wa",
-    getUrl: (text: string) =>
-      `https://wa.me/?text=${encodeURIComponent(text)}`,
-  },
-]
-
-function getShareText(name: string, ticketType: string) {
-  return `I just secured my ${ticketType.toUpperCase()} ticket for G-SPARK SUMMIT 1.0!\n\nNigeria's Premier Tech Summit\n\nApril 25, 2026 | FUNAAB, Abeokuta\n\nRegister now at gsparksummit.com\n\n#GSPARK #TechSummit #AfricaTech`
-}
+import { GDG_COMMUNITY_REGISTRATION_URL } from "@/lib/links"
 
 interface EventTicketProps {
-  registration: Registration
+  displayName: string
+  ticketId: string
+  onRegenerate: () => void
 }
 
-export function EventTicket({ registration }: EventTicketProps) {
+export function EventTicket({ displayName, ticketId, onRegenerate }: EventTicketProps) {
   const ticketRef = useRef<HTMLDivElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
@@ -56,31 +27,20 @@ export function EventTicket({ registration }: EventTicketProps) {
     reader.readAsDataURL(file)
   }
 
-  const ticketId = registration.ticket_id || "GSPARK-XXXXXXXX"
+  const ticketName = displayName || "Anonymous Attendee"
   const qrData = JSON.stringify({
     ticket_id: ticketId,
-    name: registration.full_name,
-    email: registration.email,
-    type: registration.ticket_type,
+    name: ticketName,
+    event: "G-SPARK SUMMIT 1.0",
+    registration_url: GDG_COMMUNITY_REGISTRATION_URL,
   })
 
-  const ticketLabel =
-    registration.ticket_type === "vip"
-      ? "VIP"
-      : registration.ticket_type === "student"
-        ? "Student"
-        : "Regular"
-
-  const ticketColor =
-    registration.ticket_type === "vip"
-      ? "#FFD700"
-      : registration.ticket_type === "student"
-        ? "#1FAE63"
-        : "#1FAE63"
+  const shareText = `I'm attending G-SPARK SUMMIT 1.0 at FUNAAB, Abeokuta on April 25, 2026. Join me and register at ${GDG_COMMUNITY_REGISTRATION_URL}`
 
   const handleDownload = async () => {
     if (!ticketRef.current) return
     setDownloading(true)
+
     try {
       const dataUrl = await toPng(ticketRef.current, {
         quality: 1,
@@ -98,179 +58,156 @@ export function EventTicket({ registration }: EventTicketProps) {
     }
   }
 
-  const shareText = getShareText(registration.full_name, ticketLabel)
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "G-SPARK SUMMIT 1.0",
+          text: shareText,
+          url: GDG_COMMUNITY_REGISTRATION_URL,
+        })
+        return
+      }
+
+      await navigator.clipboard.writeText(`${shareText}\n${GDG_COMMUNITY_REGISTRATION_URL}`)
+      alert("Ticket link copied to clipboard.")
+    } catch {
+      alert("Sharing was not available. Copy the registration link and share it manually.")
+    }
+  }
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      {/* Ticket Card */}
+    <div className="mx-auto w-full max-w-lg">
       <div
         ref={ticketRef}
-        className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border border-gray-800 p-6 sm:p-8"
+        className="relative overflow-hidden rounded-3xl border border-gray-800 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 p-6 text-white sm:p-8"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <img src="/g-spark-logo.png" alt="G-SPARK" className="h-8 sm:h-10" />
-          <div
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
-            style={{
-              backgroundColor: `${ticketColor}15`,
-              borderColor: `${ticketColor}40`,
-            }}
-          >
-            <span
-              className="w-2 h-2 rounded-full animate-pulse"
-              style={{ backgroundColor: ticketColor }}
-            />
-            <span
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: ticketColor }}
-            >
-              {ticketLabel} Pass
-            </span>
+          <div className="flex items-center gap-2 rounded-full border border-[#1FAE63]/25 bg-[#1FAE63]/10 px-3 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#1FAE63]" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#1FAE63]">Ticket Pass</span>
           </div>
         </div>
 
-        {/* Attendee Info */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="mb-6 flex items-center gap-4">
           {photo ? (
             <img
               src={photo}
-              alt={registration.full_name}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 flex-shrink-0"
-              style={{ borderColor: ticketColor }}
+              alt={ticketName}
+              className="h-16 w-16 shrink-0 rounded-full border-2 object-cover sm:h-20 sm:w-20"
             />
           ) : (
             <div
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center bg-gray-800 border-2 border-dashed border-gray-600 flex-shrink-0 cursor-pointer hover:border-gray-500 transition-colors"
+              className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-gray-600 bg-gray-800/50 transition-colors hover:border-gray-500 sm:h-20 sm:w-20"
               onClick={() => photoInputRef.current?.click()}
             >
-              <Camera className="w-6 h-6 text-gray-500" />
+              <Camera className="h-6 w-6 text-gray-500" />
             </div>
           )}
           <div className="min-w-0">
-            <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
-              Attendee
-            </p>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white truncate">
-              {registration.full_name}
-            </h3>
-            {registration.role && (
-              <p className="text-gray-400 mt-1">{registration.role}</p>
-            )}
+            <p className="mb-1 text-xs uppercase tracking-wider text-gray-500">Attendee</p>
+            <h3 className="truncate text-2xl font-bold text-white sm:text-3xl">{ticketName}</h3>
           </div>
         </div>
 
-        {/* Event Details */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-2 gap-4">
           <div>
-            <p className="text-gray-500 text-xs uppercase tracking-wider">
-              Date
-            </p>
-            <p className="text-white font-medium">April 25, 2026</p>
+            <p className="text-xs uppercase tracking-wider text-gray-500">Date</p>
+            <p className="font-medium text-white">April 25, 2026</p>
           </div>
           <div>
-            <p className="text-gray-500 text-xs uppercase tracking-wider">
-              Location
-            </p>
-            <p className="text-white font-medium">FUNAAB, Abeokuta</p>
+            <p className="text-xs uppercase tracking-wider text-gray-500">Location</p>
+            <p className="font-medium text-white">FUNAAB, Abeokuta</p>
           </div>
         </div>
 
-        {/* Event Banner */}
-        <div className="py-3 px-5 bg-gradient-to-r from-[#1FAE63]/20 via-transparent to-[#E53935]/20 rounded-xl border border-gray-700/50 mb-6">
-          <p className="text-gray-400 text-sm">I'm attending</p>
+        <div className="mb-6 rounded-xl border border-gray-700/50 bg-linear-to-r from-[#1FAE63]/20 via-transparent to-[#E53935]/20 px-5 py-3">
+          <p className="text-sm text-gray-400">I'm attending</p>
           <p className="text-xl font-bold text-white">
             G-SPARK SUMMIT <span className="text-[#1FAE63]">1.0</span>
           </p>
         </div>
 
-        {/* QR Code + Ticket ID */}
         <div className="flex items-end justify-between">
-          <div className="bg-white p-3 rounded-xl">
+          <div className="rounded-xl bg-white p-3">
             <QRCodeSVG value={qrData} size={96} level="M" />
           </div>
           <div className="text-right">
-            <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
-              Ticket ID
-            </p>
-            <p className="text-white font-mono text-sm font-semibold">
-              {ticketId}
-            </p>
-            <p className="text-gray-600 text-xs mt-1">Scan QR to verify</p>
+            <p className="mb-1 text-xs uppercase tracking-wider text-gray-500">Ticket ID</p>
+            <p className="font-mono text-sm font-semibold text-white">{ticketId}</p>
+            <p className="mt-1 text-xs text-gray-600">Scan QR to verify</p>
           </div>
         </div>
+
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
+          className="hidden"
+        />
       </div>
 
-      {/* Photo Upload */}
-      <input
-        ref={photoInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handlePhotoUpload}
-        className="hidden"
-      />
       <button
         onClick={() => photoInputRef.current?.click()}
-        className="w-full flex items-center justify-center gap-2 mt-6 px-5 py-3 bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white rounded-xl font-medium transition-all border border-dashed border-gray-700"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-700 bg-gray-800/50 px-5 py-3 font-medium text-gray-400 transition-all hover:bg-gray-800 hover:text-white"
       >
-        <Camera className="w-4 h-4" />
+        <Camera className="h-4 w-4" />
         {photo ? "Change Photo" : "Add Your Photo"}
       </button>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 mt-3">
+      <div className="mt-3 flex gap-3">
         <button
           onClick={handleDownload}
           disabled={downloading}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#1FAE63] hover:bg-[#178F52] disabled:opacity-60 text-white rounded-xl font-medium transition-all"
+          className="flex-1 rounded-xl bg-[#1FAE63] px-5 py-3.5 font-medium text-white transition-all hover:bg-[#178F52] disabled:opacity-60"
         >
-          <Download className="w-4 h-4" />
-          {downloading ? "Saving..." : "Download Ticket"}
+          <span className="inline-flex items-center justify-center gap-2">
+            <Download className="h-4 w-4" />
+            {downloading ? "Saving..." : "Download Ticket"}
+          </span>
         </button>
         <div className="relative">
           <button
             onClick={() => setShowShareMenu(!showShareMenu)}
-            className="flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-medium transition-all border border-gray-700"
+            className="flex items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800 px-5 py-3.5 font-medium text-white transition-all hover:bg-gray-700"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="h-4 w-4" />
             Share
           </button>
 
-          {/* Share dropdown */}
           {showShareMenu && (
-            <div className="absolute bottom-full mb-2 right-0 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-                <span className="text-white text-sm font-medium">
-                  Share on
-                </span>
-                <button
-                  onClick={() => setShowShareMenu(false)}
-                  className="text-gray-500 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
+            <div className="absolute bottom-full right-0 z-50 mb-2 w-56 overflow-hidden rounded-xl border border-gray-700 bg-gray-900 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-gray-800 px-4 py-3">
+                <span className="text-sm font-medium text-white">Share on</span>
+                <button onClick={() => setShowShareMenu(false)} className="text-gray-500 hover:text-white">
+                  <X className="h-4 w-4" />
                 </button>
               </div>
-              {SHARE_PLATFORMS.map((platform) => (
-                <button
-                  key={platform.name}
-                  onClick={() => {
-                    window.open(platform.getUrl(shareText), "_blank")
-                    setShowShareMenu(false)
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-800 transition-colors text-left"
-                >
-                  <span className="w-8 h-8 flex items-center justify-center bg-gray-800 rounded-lg text-white text-sm font-bold">
-                    {platform.icon}
-                  </span>
-                  <span className="text-gray-300 text-sm">
-                    {platform.name}
-                  </span>
-                </button>
-              ))}
+              <button
+                onClick={() => {
+                  handleShare()
+                  setShowShareMenu(false)
+                }}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-800"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 text-sm font-bold text-white">
+                  Link
+                </span>
+                <span className="text-sm text-gray-300">Copy / Share link</span>
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      <button
+        onClick={onRegenerate}
+        className="mt-3 w-full rounded-xl border border-gray-700 bg-gray-800 px-5 py-3.5 font-medium text-white transition-all hover:bg-gray-700"
+      >
+        Regenerate ID
+      </button>
     </div>
   )
 }

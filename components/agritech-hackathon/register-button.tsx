@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { GDG_COMMUNITY_REGISTRATION_URL } from "@/lib/links"
 
 type RegisterButtonProps = {
   className?: string
@@ -10,7 +11,7 @@ type RegisterButtonProps = {
 export function RegisterButton({
   className,
   label = "Register Now",
-  href = "/#register",
+  href = GDG_COMMUNITY_REGISTRATION_URL,
 }: RegisterButtonProps) {
   const isExternal = href.startsWith("http")
   return (

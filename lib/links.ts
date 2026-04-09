@@ -1,0 +1,1 @@
+export const GDG_COMMUNITY_REGISTRATION_URL = "https://gdg.community.dev/e/m29qkv/"

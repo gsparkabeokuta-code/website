@@ -108,7 +108,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             </p>
             <div className="space-y-3">
               <Button
-                onClick={() => router.push(`/ticket?email=${encodeURIComponent(formData.email)}`)}
+                onClick={() => router.push(`/ticket`)}
                 className="w-full py-6 bg-[#1FAE63] hover:bg-[#178F52]"
               >
                 View & Download Your Ticket
